@@ -1,5 +1,7 @@
 from typing import NamedTuple
 from copy import deepcopy
+import argparse
+import time
 
 Move = NamedTuple('Move', [('row', int), ('col', int)])
 
@@ -132,23 +134,29 @@ class Board:
 	def printWinner(self, win):
 		winner = intToChar(win)
 		print('Player', winner, 'Wins!')
+		print('')
 		
-	def playGame(self):
+	def playGame(self, bothMinimax):
+		startTime = time.time()
 		self.printBoard()
 		while True:
 			curPlayer = self.players[(self.iters+1) % 2]
 			self = self.placeMove(curPlayer.chooseMove(self), curPlayer.val)
-			print('')
 			self.printBoard()
+			print('')
 			if self.iters > 4:
 				win = self.checkWinner()
 				if win:
 					self.printWinner(win)
-					return
+					break
 			if self.iters == 9:
 				print("It's a draw!")
-				return
+				break
 			self.iters += 1
+		endTime = time.time()
+		duration = round(endTime-startTime, 2)
+		if bothMinimax:
+			print(f"Game was completed in {duration} seconds.")
 				
 class HumanPlayer:
 
@@ -167,48 +175,60 @@ class HumanPlayer:
 				
 class MiniMaxPlayer:
 	
-    def __init__(self, val):
+    def __init__(self, val, ab):
         self.val = val
         self.plies = int(input("How many plies down do you want the computer to look down the game tree (int)? "))
+        self.ab = ab
         
     def chooseMove(self, board):
         if self.val == X:
-        	value, move = self.maxValue(board, 1)
+        	value, move = self.maxValue(board, 1, float('-inf'), float('inf'))
         elif self.val == O:
-        	value, move = self.minValue(board, 1)
+        	value, move = self.minValue(board, 1, float('-inf'), float('inf'))
+        print('Player', intToChar(self.val), "placed a piece at", str(move.row) + ',', str(move.col))
         return move
         
-    def maxValue(self, board, iteration):
+    def maxValue(self, board, iteration, alpha, beta):
     	nextMove = None
     	if iteration > self.plies or not board.possibleMoves():
     		return board.heuristic(), nextMove
     	best = float('-inf')
     	for move in board.possibleMoves():
-    		curVal, curMove = self.minValue(board.placeMove(move, X), iteration + 1)
+    		curVal, curMove = self.minValue(board.placeMove(move, X), iteration + 1, alpha, beta)
     		if curVal > best:
     			best, nextMove = curVal, move
+    			alpha = max(alpha, best)
+    		if self.ab:
+    			if beta <= alpha:
+    				break
     	return best, nextMove
     	
-    def minValue(self, board, iteration):
+    def minValue(self, board, iteration, alpha, beta):
     	nextMove = None
     	if iteration > self.plies or not board.possibleMoves():
     		return board.heuristic(), nextMove
     	best = float('inf')
     	for move in board.possibleMoves():
-    		curVal, curMove = self.maxValue(board.placeMove(move, O), iteration + 1)
+    		curVal, curMove = self.maxValue(board.placeMove(move, O), iteration + 1, alpha, beta)
     		if curVal < best:
     			best, nextMove = curVal, move
+    			beta = min(beta, best)
+    		if self.ab:
+    			if beta <= alpha:
+    				break
     	return best, nextMove
     	
-def getPlayers():
+def getPlayers(ab):
 	player1, player2 = None, None
+	bothMinimax = True
 	while True:
 		playerOneType = input("Should Player 'X' be human or computer controlled? Enter 'h' for computer and 'c' for computer: ")
 		if playerOneType == 'h':
 			player1 = HumanPlayer(X)
+			bothMinimax = False
 			break
 		elif playerOneType == 'c':
-			player1 = MiniMaxPlayer(X)
+			player1 = MiniMaxPlayer(X, ab)
 			break
 		else:
 			print("Invalid. Please try again.")
@@ -217,19 +237,27 @@ def getPlayers():
 		playerTwoType = input("Should Player 'O' be human or computer controlled? Enter 'h' for computer and 'c' for computer: ")
 		if playerTwoType == 'h':
 			player2 = HumanPlayer(O)
+			bothMinimax = False
 			break
 		elif playerTwoType == 'c':
-			player2 = MiniMaxPlayer(O)
+			player2 = MiniMaxPlayer(O, ab)
 			break
 		else:
 			print("Invalid. Please try again.")
 			
-	return player1, player2
+	return player1, player2, bothMinimax
 
 def main():
-	player1, player2 = getPlayers()
+	parser = argparse.ArgumentParser(description = "Tic-Tac-Toe with Minimax Search Algorithm")
+	parser.add_argument("-ab", 
+						help = "set to true to use alpha-beta pruning on minimax game tree.", 
+						required = False, 
+						default = False, 
+						type = bool)
+	args = parser.parse_args()	
+	player1, player2, bothMinimax = getPlayers(args.ab)
 	board = Board(player1, player2)
-	board.playGame()
+	board.playGame(bothMinimax)
 	
 if __name__ == '__main__':
 	main()
