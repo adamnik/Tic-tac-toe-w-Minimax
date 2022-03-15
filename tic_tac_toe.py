@@ -155,6 +155,7 @@ class Board:
 			self.iters += 1
 		endTime = time.time()
 		duration = round(endTime-startTime, 2)
+		#print time for non-human controlled game
 		if bothMinimax:
 			print(f"Game was completed in {duration} seconds.")
 				
@@ -180,6 +181,9 @@ class MiniMaxPlayer:
         self.plies = int(input("How many plies down do you want the computer to look down the game tree (int)? "))
         self.ab = ab
         
+    '''
+    Implementation of Minimax Algorithm w/ optional alpha-beta pruning utility.
+    '''
     def chooseMove(self, board):
         if self.val == X:
         	value, move = self.maxValue(board, 1, float('-inf'), float('inf'))
@@ -220,6 +224,7 @@ class MiniMaxPlayer:
     	
 def getPlayers(ab):
 	player1, player2 = None, None
+	#check whether both players are computer controlled for timing
 	bothMinimax = True
 	while True:
 		playerOneType = input("Should Player 'X' be human or computer controlled? Enter 'h' for computer and 'c' for computer: ")

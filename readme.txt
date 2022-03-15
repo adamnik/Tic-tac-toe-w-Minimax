@@ -10,7 +10,7 @@ Optional ‘ab’ arg determines whether or not alpha-beta pruning will be used 
 Program gives user the option to choose whether Players ‘X’ and ‘O’ are controlled by human players or minimax search algorithm. With each minimax player, the program will also prompt the user to input an integer that corresponds to the ply value, which is the number of game tree levels the minimax player will look down each turn (for a full game tree search, choose a ply value of 9). 
 
 
-If both players are controlled by minimax, then the program will print the duration of the game in seconds when the game terminates. We did this to test for the effectiveness of using alpha-beta pruning; for a full game search of plies levels of 9 for both players, alpha-beta pruning was able to complete the game in 2-3 secs, whereas normal minimax took about 50 seconds each time.
+If both players are controlled by minimax, then the program will print the duration of the game in seconds when the game terminates. We did this to test for the effectiveness of using alpha-beta pruning; for a full game search of plies levels of 9 for both players, alpha-beta pruning was able to complete the game in 2-3 secs, whereas normal minimax took about 40-50 seconds each time.
 
 
 Board Heuristic:
