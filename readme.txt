@@ -25,3 +25,13 @@ The board is stored as a matrix of 3’s (X’s), -3’s (O’s), and 0’s (emp
 To begin, for terminal states, we assign a value of +50 to Player X wins and -50 to Player O wins. These values are more extreme than the possible heuristic values of any non-terminal boards.
  
 For non-terminal boards, for each line of 3 values (each row, column, and diagonal), we have a sum associated with it, which we initialize at 0. For each value we see, if the value is != to that sum, then we add the value to the sum. If the value is == to the sum (when there are two pieces of the same type in a line and thus one move away from a win), we multiply value * sum (maintaining the negative sign when we have two O’s in the same line). This results in the heuristic assigning more extreme values to boards that are closer to wins by either player. The final heuristic for any given board is the summation of values from every row, column, and diagonal in the board.
+
+Examples:
+
+X |  |   -> +3
+
+X | X |   -> +9
+
+O |  |   -> -3
+
+X | O |   -> 0

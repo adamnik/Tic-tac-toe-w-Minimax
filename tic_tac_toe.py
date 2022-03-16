@@ -27,7 +27,14 @@ class Board:
 		self.iters = 1
 		
 	def heuristic(self):
+		'''
+		Heuristic for board is summation of heuristic value of each row, column, and 
+		diagonal on board.
+		
+		For more information, check out readme.txt
+		'''
 	
+		#terminal states of wins have highest values
 		if self.checkWinner() == X:
 			return 50
 		elif self.checkWinner() == O:
@@ -95,6 +102,7 @@ class Board:
 			if i != self.size - 1:
 				print('   -+-+-')
 				
+	#returns list of possible next moves for a given board
 	def possibleMoves(self):
 		if self.checkWinner():
 			return None
@@ -110,6 +118,7 @@ class Board:
 		BoardCopy.matrix[move.row][move.col] = val
 		return BoardCopy
 		
+	#returns value of winner or 0 if no winner
 	def checkWinner(self):
 		#horizontals
 		for row in self.matrix:
@@ -178,7 +187,9 @@ class MiniMaxPlayer:
 	
     def __init__(self, val, ab):
         self.val = val
+        #number of game tree levels the minimax algorithm searches down
         self.plies = int(input("How many plies down do you want the computer to look down the game tree (int)? "))
+        #alpha-beta pruning boolean
         self.ab = ab
         
     '''
@@ -194,6 +205,7 @@ class MiniMaxPlayer:
         
     def maxValue(self, board, iteration, alpha, beta):
     	nextMove = None
+    	#return value up if terminal state or ply limit is reached
     	if iteration > self.plies or not board.possibleMoves():
     		return board.heuristic(), nextMove
     	best = float('-inf')
@@ -202,6 +214,7 @@ class MiniMaxPlayer:
     		if curVal > best:
     			best, nextMove = curVal, move
     			alpha = max(alpha, best)
+    		#prune tree
     		if self.ab:
     			if beta <= alpha:
     				break
@@ -209,6 +222,7 @@ class MiniMaxPlayer:
     	
     def minValue(self, board, iteration, alpha, beta):
     	nextMove = None
+    	#return value up if terminal state or ply limit is reached
     	if iteration > self.plies or not board.possibleMoves():
     		return board.heuristic(), nextMove
     	best = float('inf')
@@ -217,6 +231,7 @@ class MiniMaxPlayer:
     		if curVal < best:
     			best, nextMove = curVal, move
     			beta = min(beta, best)
+    		#prune tree
     		if self.ab:
     			if beta <= alpha:
     				break
